@@ -1,3 +1,4 @@
+use wry::application::dpi::LogicalSize;
 use crate::controller::DesktopController;
 use dioxus_core::ScopeState;
 use wry::application::event_loop::ControlFlow;
@@ -120,6 +121,11 @@ impl DesktopContext {
         let _ = self.proxy.send_event(SetZoomLevel(scale_factor));
     }
 
+    /// set window zoom level
+    pub fn set_inner_size(&self, size: LogicalSize<i32>) {
+        let _ = self.proxy.send_event(SetResize(size));
+    }
+
     /// launch print modal
     pub fn print(&self) {
         let _ = self.proxy.send_event(Print);
@@ -159,6 +165,7 @@ pub enum UserWindowEvent {
     SetDecorations(bool),
 
     SetZoomLevel(f64),
+    SetResize(LogicalSize<i32>),
 
     Print,
     DevTool,
@@ -202,6 +209,8 @@ pub(super) fn handler(
         }
 
         SetTitle(content) => window.set_title(&content),
+        SetResize(size) => window.set_inner_size(size),
+
         SetDecorations(state) => window.set_decorations(state),
 
         SetZoomLevel(scale_factor) => webview.zoom(scale_factor),
