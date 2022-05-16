@@ -221,7 +221,11 @@ pub(super) fn handler(
                 log::warn!("Open print modal failed: {e}");
             }
         }
-        DevTool => webview.open_devtools(),
+
+        DevTool => {
+            #[cfg(any(debug_assertions, feature = "devtools"))]
+            webview.open_devtools()
+        },
 
         Eval(code) => {
             if let Err(e) = webview.evaluate_script(code.as_str()) {
